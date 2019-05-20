@@ -80,6 +80,14 @@ Print a color table showing all terminal colors supported.
 
 ---
 
+### dst
+
+**USAGE:** `dst [TIMEZONE]`
+
+Check daylight savings for a given timezone. Timezone must be in _tz database_
+format. You can check the complete list
+[here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+
 ### extract
 
 Use to extract compressed files: `extract archive.zip`.
