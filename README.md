@@ -90,6 +90,8 @@ Check daylight savings for a given timezone. Timezone must be in _tz database_
 format. You can check the complete list
 [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
 
+---
+
 ### extract
 
 Use to extract compressed files: `extract archive.zip`.
@@ -103,7 +105,8 @@ Use to extract compressed files: `extract archive.zip`.
 >
 > All utilities that are prefixed with `git-` can be used as git commands. so
 > instead of using the command as `git-browse` you can `git browse` and have the
-> same effect.
+> same effect. These formats will be listed in the format
+> `git-binary (git binary)` to enforce this
 
 ### git-ahead (git ahead)
 
