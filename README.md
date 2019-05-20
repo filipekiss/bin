@@ -9,10 +9,9 @@ This repository was created from my [dotfiles][1] repository. I've collected
 uncredited bin, please, [let me know][issue] (or open a
 [pull-request][pull-request]) and I'll update it accordingly. :)
 
-> **Disclaimer**: I mainly use ZSH, so some scripts here might not work as
-> well (or not work at all) in other shell like [bash][2] or [fish][3]. Feel
-> free to open a [pull-request][pull-request] to make these scripts more
-> portable.
+> **Disclaimer**: I mainly use ZSH, so some scripts here might not work as well
+> (or not work at all) in other shell like [bash][2] or [fish][3]. Feel free to
+> open a [pull-request][pull-request] to make these scripts more portable.
 
 ## Install
 
@@ -36,11 +35,10 @@ Restart your terminal and the commands should be available.
 
 ### \$
 
-If you ever copied a command from the internet (like the `git clone` above)
-and got an error saying `$: command not found`, this is the script for you. It
+If you ever copied a command from the internet (like the `git clone` above) and
+got an error saying `$: command not found`, this is the script for you. It
 reminds you to stop copy pasting commands from the internet (because that's a
-security issue, you know) but also runs the command so you don't get
-frustrated
+security issue, you know) but also runs the command so you don't get frustrated
 
 ---
 
@@ -58,14 +56,14 @@ logging mechanism.
 
 #### Example
 
-At the beginning of your script, call `__debug start`. You may pass an
-optional file name where the messages will be written, for example
+At the beginning of your script, call `__debug start`. You may pass an optional
+file name where the messages will be written, for example
 `__debug start myscript.log`. Be aware that the `myscript.log` file **will be
 truncated**.
 
 During your script, when you need to debug something, just call
-`__debug "Debugging message"` and a message will be appended to the debug
-file, with a time stamp.
+`__debug "Debugging message"` and a message will be appended to the debug file,
+with a time stamp.
 
 You can use `__debug tail` to tail the latest debug file (or you can `tail -f`
 the file directly)
@@ -94,8 +92,8 @@ Use to extract compressed files: `extract archive.zip`.
 > **A word about `git-` binaries**
 >
 > All utilities that are prefixed with `git-` can be used as git commands. so
-> instead of using the command as `git-browse` you can `git browse` and have
-> the same effect.
+> instead of using the command as `git-browse` you can `git browse` and have the
+> same effect.
 
 ### git-ahead (git ahead)
 
@@ -138,8 +136,8 @@ default remote (usually `origin`) to choose which url to open. if you have
 multiple remotes, you can pass an options argument with the remote name, for
 example `git browse gitlab`.
 
-> If you have [`hub`][hub] installed, it already provides a `browse` command
-> to git and it will take precedence over this.
+> If you have [`hub`][hub] installed, it already provides a `browse` command to
+> git and it will take precedence over this.
 
 ---
 
@@ -156,8 +154,8 @@ $ git churn
 333 file3
 ```
 
-This means that `file1` changed one time, `file2` changes 22 times, and
-`file3` changes 333 times.
+This means that `file1` changed one time, `file2` changes 22 times, and `file3`
+changes 333 times.
 
 Show churn for whole repo: `$ git churn`
 
@@ -205,8 +203,8 @@ Check which branches are already merged into you main branch and delete them.
 
 **--remote** <br> Run against remote branches. Default is running on local
 
-**--dry-run, -n** <br> Don't actually delete anything. Useful for checking
-what would be deleted
+**--dry-run, -n** <br> Don't actually delete anything. Useful for checking what
+would be deleted
 
 **--master-branch [master]** <br> Use this to pass the name of the branch that
 act as a master, in case your repository uses a different name.
@@ -235,8 +233,8 @@ times. \* wildcard is supported
 Would delete hotfix/1.0.1, but would leave alone feature/some-feature,
 release/1.0.0
 
-**--squashed** <br> Also check for branches that were merged to master using
-the squash strategy
+**--squashed** <br> Also check for branches that were merged to master using the
+squash strategy
 
 **--squashed-only** <br> Check only for branches that we're merged using the
 squash strategy
@@ -246,9 +244,9 @@ branches are found but no `--squashed` option was passed
 
 #### Arguments
 
-**[branch name]** <br> The only argument this command accepts is the branch
-name to compare other branches against. Defaults to origin/master (or whatever
-remote you pass using the --origin option)
+**[branch name]** <br> The only argument this command accepts is the branch name
+to compare other branches against. Defaults to origin/master (or whatever remote
+you pass using the --origin option)
 
 ---
 
@@ -263,14 +261,13 @@ to use
 
 **`git edit conflicts`** <br> Open all files that are in a conflicted state
 
-**`git edit commited`** <br> Open all files that were changed on the last
+**`git edit commited`** <br> Open all files that were changed on the last commit
+
+**`git edit staged`** <br> Open all files that are staged for commit since last
 commit
 
-**`git edit staged`** <br> Open all files that are staged for commit since
+**`git edit edited`** <br> Open all files that were edited but not staged since
 last commit
-
-**`git edit edited`** <br> Open all files that were edited but not staged
-since last commit
 
 ---
 
@@ -278,10 +275,37 @@ since last commit
 
 **USAGE:** `git flush`
 
-Use this to reduce the size of your repository. It deletes all reflogs,
-stashes and other stuff that may be bloating your repository.
+Use this to reduce the size of your repository. It deletes all reflogs, stashes
+and other stuff that may be bloating your repository.
 
 _Requires `perl`_
+
+---
+
+### git-go (git go)
+
+**USAGE:** `git-go [OPTION] [COMMAND]`
+
+#### Options
+
+`-g` - Perform command globally, not scoped to current git repository
+
+#### Commands
+
+- `git go search "q"` - Perform a search
+- `git go @user` - Browse a user
+- `git go explore` - Explore GitHub `git go my [SUBCOMMAND]` - Browse your
+  personal items, where SUBCOMMAND is one of:
+
+  - `dashboard`
+  - `issues [assigned|mentioned|created]`
+  - `notifications`
+  - `profile`
+  - `pulls`
+  - `settings`
+  - `stars`
+
+- Everything else forwards to `hub browse`
 
 ---
 
@@ -289,9 +313,9 @@ _Requires `perl`_
 
 **USAGE:** `git health [all|local|remote] --stale`
 
-By default, git health will be run against local branches. You can pass local
-to only check local branches and remote to only check remote branches and all
-to check all branches.
+By default, git health will be run against local branches. You can pass local to
+only check local branches and remote to only check remote branches and all to
+check all branches.
 
 The branches will be sorted by last activity, from the most recently active to
 the least recent active. You can use a dash prefix to invert the order, so
@@ -299,9 +323,9 @@ the least recent active. You can use a dash prefix to invert the order, so
 the most recent active branch on the bottom
 
 If you pass the `--stale` option, only stale branches will be listed. By
-default, branches are considered stale if no commit was made to them in the
-past 3 months. You can pass a value to stale, so `--stale "15 days ago"` will
-list branches with no commits in the last 15 days.
+default, branches are considered stale if no commit was made to them in the past
+3 months. You can pass a value to stale, so `--stale "15 days ago"` will list
+branches with no commits in the last 15 days.
 
 ---
 
@@ -348,16 +372,16 @@ into a subdirectory. This can be useful if you want to merge a submodule into
 its parent repository.
 
 For example, your main repository might contain a submodule at the path
-`src/lib/`, containing a file called `test.c`. If you would merge the
-submodule into the parent repository without further modification, all the
-commits to `test.c` will have the path `/test.c`, whereas the file now
-actually lives in `src/lib/test.c`.
+`src/lib/`, containing a file called `test.c`. If you would merge the submodule
+into the parent repository without further modification, all the commits to
+`test.c` will have the path `/test.c`, whereas the file now actually lives in
+`src/lib/test.c`.
 
-If you rewrite your history using this script, adding `src/lib/` to the path
-and the merging into the parent repository, all paths will be correct.
+If you rewrite your history using this script, adding `src/lib/` to the path and
+the merging into the parent repository, all paths will be correct.
 
-**NOTE: This script might complete garble your repository, so PLEASE apply
-this only to a clone of the repository where it does not matter if the repo is
+**NOTE: This script might complete garble your repository, so PLEASE apply this
+only to a clone of the repository where it does not matter if the repo is
 destroyed.**
 
 ---
@@ -366,8 +390,8 @@ destroyed.**
 
 **USAGE:** `git shamend [options] [<revision>]`
 
-Amends your staged changes as a fixup (keeping the pre-existing commit
-message) to the specified commit, or HEAD if no revision is specified.
+Amends your staged changes as a fixup (keeping the pre-existing commit message)
+to the specified commit, or HEAD if no revision is specified.
 
 ##### Options:
 
@@ -380,20 +404,20 @@ message) to the specified commit, or HEAD if no revision is specified.
 **USAGE:** `git store [description]` after `git add files-to-stash`
 
 This script is based on
-[this stackoverflow answer](https://stackoverflow.com/a/32951373). It
-basically creates two stashes: One named "Stashed: <description>", which
-includes everything. This is git default stash. A second one named "Stored:
-<description>". This will include only the staged changes. By default, the
-first stash created is deleted, leaving you only with the stash with the
-staged changes. See the `store.preserve` option below for more info.
+[this stackoverflow answer](https://stackoverflow.com/a/32951373). It basically
+creates two stashes: One named "Stashed: <description>", which includes
+everything. This is git default stash. A second one named "Stored:
+<description>". This will include only the staged changes. By default, the first
+stash created is deleted, leaving you only with the stash with the staged
+changes. See the `store.preserve` option below for more info.
 
 ##### Settings
 
 `store.preserve = [true|false]` <br> By default, `git-store` will not preserve
 the unstaged changes. Since we use the double stash method, it will delete the
 "bad" stash and keep only the "good" stash (the one with only the staged
-changes). You can keep the "bad" stash by setting the `store.preserve` config
-to true:
+changes). You can keep the "bad" stash by setting the `store.preserve` config to
+true:
 
 `git config [--global] store.preserve true`
 
@@ -444,10 +468,9 @@ server, and for wrangling many topic branches.
 
 `git-wtf` can show you:
 
--   How a branch relates to the remote repo, if it's a tracking branch.
--   How a branch relates to integration branches, if it's a feature branch.
--   How a branch relates to the feature branches, if it's an integration
-    branch.
+- How a branch relates to the remote repo, if it's a tracking branch.
+- How a branch relates to integration branches, if it's a feature branch.
+- How a branch relates to the feature branches, if it's an integration branch.
 
 `git-wtf` is best used before a git push, or between a git fetch and a git
 merge. Be sure to set color.ui to auto or yes for maximum viewing pleasure.
@@ -470,12 +493,11 @@ branches, and which are feature branches. (Specifically, it assumes the
 integration branches are named "master", "next" and "edge".) If it guesses
 incorrectly, you will have to create a `.git-wtfrc` file.
 
-To start building a configuration file, run
-`git-wtf --dump-config > .git-wtfrc` and edit it. The config file is a YAML
-file that specifies the integration branches, any branches to ignore, and the
-max number of commits to display when `--all-commits` isn't used. `git-wtf`
-will look for a `.git-wtfrc` file starting in the current directory, and
-recursively up to the root.
+To start building a configuration file, run `git-wtf --dump-config > .git-wtfrc`
+and edit it. The config file is a YAML file that specifies the integration
+branches, any branches to ignore, and the max number of commits to display when
+`--all-commits` isn't used. `git-wtf` will look for a `.git-wtfrc` file starting
+in the current directory, and recursively up to the root.
 
 IMPORTANT NOTE: all local branches referenced in `.git-wtfrc` must be prefixed
 with `heads/`, e.g. `heads/master`. Remote branches must be of the form
@@ -487,17 +509,17 @@ with `heads/`, e.g. `heads/master`. Remote branches must be of the form
 
 **USAGE:** `macos-wify [no-symbol]`
 
-I used this to show the current wi-fi connection name in my TMUX status bar.
-If you pass `no-symbol` as the argument, only the SSID of the connection will
-be returned. Otherwise, the format `₩:<SSID>` wil be used
+I used this to show the current wi-fi connection name in my TMUX status bar. If
+you pass `no-symbol` as the argument, only the SSID of the connection will be
+returned. Otherwise, the format `₩:<SSID>` wil be used
 
 ---
 
 ## Thanks
 
-I'd like to thank everyone who posts their scripts online so people like me
-are able to read and learn from them. This is a small way of giving back to
-the community.
+I'd like to thank everyone who posts their scripts online so people like me are
+able to read and learn from them. This is a small way of giving back to the
+community.
 
 **filipekiss/bin** © 2019+, Filipe Kiss Released under the [MIT] License.<br>
 Authored and maintained by Filipe Kiss.
