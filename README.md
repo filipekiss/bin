@@ -521,6 +521,14 @@ with `heads/`, e.g. `heads/master`. Remote branches must be of the form
 
 ---
 
+### killport
+
+**USAGE:** `killport [PORT]`
+
+Kill all processes running on the specified port.
+
+---
+
 ### macos-wifi
 
 **USAGE:** `macos-wify [no-symbol]`
