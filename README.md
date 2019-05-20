@@ -1,3 +1,5 @@
+<!--alex disable blacklist color colors execute kill nuke sexy whitelist wtf-->
+
 # bin
 
 > My collection of small binary utilities
