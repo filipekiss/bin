@@ -363,6 +363,22 @@ for more info.
 
 ---
 
+### gir-rel (git rel)
+
+**USAGE:** `git-rel [<ref>]` Shows the relationship between the current branch
+and <ref>. With no <ref>, the current branch's remote tracking branch is used.
+
+Examples:
+
+        $ git-rel
+        15 ahead
+        11 behind
+
+        $ git-rel v1.1
+        230 ahead
+
+---
+
 ### git-rewrite-to-subfolder (git rewrite-to-subfolder)
 
 **USAGE:** `git rewrite-to-subfolder`
