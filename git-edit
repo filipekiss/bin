@@ -1,22 +1,31 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Usage: git-edit [conflicted|staged|edited|commited]
 
 main() {
     local action="$1"
     case $action in
-        conflict|conflicts|conflicted)
-            $EDITOR $(git diff --name-only --diff-filter=U)
-            ;;
-        commited)
-            $EDITOR $(git diff HEAD^ --name-only --diff-filter=ACMR)
-            ;;
-        staged)
-            $EDITOR $(git diff --staged --name-only --diff-filter=ACMR)
-            ;;
-        edited)
-            $EDITOR $(git diff HEAD --name-only --diff-filter=ACMR)
-            ;;
+    conflict | conflicts | conflicted)
+        read -r -d ' ' -a files < <(git diff --name-only --diff-filter=U)
+        ;;
+    commited)
+        read -r -d ' ' -a files < <(git diff HEAD^ --name-only --diff-filter=ACMR)
+        ;;
+    staged)
+        read -r -d ' ' -a files < <(git diff --staged --name-only --diff-filter=ACMR)
+        ;;
+    edited)
+        read -r -d ' ' -a files < <(git diff HEAD --name-only --diff-filter=ACMR)
+        ;;
+    *)
+        echo "'${action}' is not a valid filter"
+        return
+        ;;
     esac
+    if [[ -n ${files[*]} ]]; then
+        $EDITOR "${files[@]}"
+    else
+        echo "No files match '${action}'"
+    fi
 }
 
-main $@
+main "$@"

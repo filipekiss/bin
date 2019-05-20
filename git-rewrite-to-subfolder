@@ -1,24 +1,23 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # We need the TAB character for SED (Mac OS X sed does not understand \t)
 TAB="$(printf '\t')"
 
-function abort {
+function abort() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
     exit 1
 }
 
-function request_input {
-    read -p "$(tput setaf 4)$1 $(tput sgr0)"
+function request_input() {
+    read -r -p "$(tput setaf 4)$1 $(tput sgr0)"
 }
 
-function request_confirmation {
-    read -p "$(tput setaf 4)$1 (y/n) $(tput sgr0)"
+function request_confirmation() {
+    read -r -p "$(tput setaf 4)$1 (y/n) $(tput sgr0)"
     [ "$REPLY" == "y" ] || abort "Aborted!"
 }
 
-
-cat << "EOF"
+cat <<"EOF"
 This script rewrites your entire history, moving the current repository root
 into a subdirectory. This can be useful if you want to merge a submodule into
 its parent repository.
@@ -39,7 +38,7 @@ EOF
 
 request_confirmation "Do you want to proceed?"
 
-cat << "EOF"
+cat <<"EOF"
 Please provide the path which should be prepended to the current root. In the
 above example, that would be "src/lib". Please note that the path MUST NOT contain
 a trailing slash.
@@ -50,11 +49,9 @@ request_input "Please provide the desired path (e.g. 'src/lib'):"
 # Escape input for SED, taken from http://stackoverflow.com/a/2705678/124257
 TARGET_PATH=$(echo -n "$REPLY" | sed -e 's/[\/&]/\\&/g')
 
-
 # Last confirmation
 git ls-files -s | sed "s/${TAB}/${TAB}$TARGET_PATH\//"
 request_confirmation "Please take a look at the printed file list. Does it look correct?"
-
 
 # The actual processing happens here
 CMD="git ls-files -s | sed \"s/${TAB}/${TAB}$TARGET_PATH\//\" | GIT_INDEX_FILE=\${GIT_INDEX_FILE}.new git update-index --index-info && mv \${GIT_INDEX_FILE}.new \${GIT_INDEX_FILE}"
@@ -62,5 +59,3 @@ CMD="git ls-files -s | sed \"s/${TAB}/${TAB}$TARGET_PATH\//\" | GIT_INDEX_FILE=\
 git filter-branch \
     --index-filter "$CMD" \
     HEAD
-
-

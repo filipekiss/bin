@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 #
 # Original source: https://github.com/jwiegley/git-scripts/blob/master/git-maxpack
 

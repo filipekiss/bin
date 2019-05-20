@@ -1,8 +1,14 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
 
-local _wifi_ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk -F': ' '/ SSID/{print $2}')
+_get_wifi_ssid() {
+    local _wifi_ssid
+    local _symbol
 
-local _symbol="₩:"
+    _wifi_ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk -F': ' '/ SSID/{print $2}')
+    _symbol="₩:"
 
-[[ $@ =~ "no-symbol" ]] && _symbol=""
-[[ -n $_wifi_ssid ]] && echo ${_symbol}${_wifi_ssid} || exit 0
+    [[ "$1" =~ "no-symbol" ]] && _symbol=""
+    [[ -n $_wifi_ssid ]] && echo "${_symbol}${_wifi_ssid}" || exit 0
+}
+
+_get_wifi_ssid "$@"

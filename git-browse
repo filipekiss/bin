@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 #
 # Open current repository page on default browser
 #
@@ -28,7 +28,7 @@ function choose_open_bin() {
 function normalize_https() {
     local remote_url="$1"
     # just remove .git from the url
-    echo ${remote_url%*.git}
+    echo "${remote_url%*.git}"
 }
 
 function normalize_ssh() {
@@ -40,22 +40,21 @@ function normalize_ssh() {
     domain=${remote_url%:*}
     # extract path
     path=${remote_url#*:} # leaves user/repo.git
-    path=${path%*.git} # removes the .git
+    path=${path%*.git}    # removes the .git
     echo "https://${domain}/${path}"
 }
 
 function open_browser() {
     local remote git_url browser_url browser_bin
     remote=${1:-origin}
-    git_url=$(git ls-remote --get-url ${remote})
+    git_url=$(git ls-remote --get-url "${remote}")
     if [[ $git_url =~ "@" ]]; then
-        browser_url=$(normalize_ssh $git_url)
+        browser_url=$(normalize_ssh "$git_url")
     else
-        browser_url=$(normalize_https $git_url)
+        browser_url=$(normalize_https "$git_url")
     fi
     browser_bin=$(choose_open_bin)
-    [[ -n $browser_url ]] && $browser_bin $browser_url
+    [[ -n $browser_url ]] && $browser_bin "$browser_url"
 }
 
-open_browser $@
-
+open_browser "$@"

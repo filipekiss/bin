@@ -454,6 +454,9 @@ true:
 Syncs the current branch with it's remote counterpart. Basically a shortcut to
 `git pull --rebase && git push`
 
+> If you have [`hub`][hub] installed, it already provides a `sync` command to
+> git and it will take precedence over this.
+
 ---
 
 ### git-up (git up)
