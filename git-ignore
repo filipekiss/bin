@@ -1,16 +1,62 @@
-#!/usr/bin/env zsh
+#!/usr/bin/env bash
+
+_parse_arguments() {
+    local arg
+    while (($# > 0)); do
+        arg="$1"
+        case "$arg" in
+        --root | -R)
+            _gitignore_location="${_repo_path}/.gitignore"
+            ;;
+        --exclude | -e)
+            _gitignore_location="${_repo_path}/.git/info/exclude"
+            _use_git_exclude="yes"
+            ;;
+        --*)
+            echo "'$arg' is not a valid option"
+            _invalid_option="yes"
+            break
+            ;;
+        -*)
+            echo "'$arg' is not a valid option"
+            _invalid_option="yes"
+            break
+            ;;
+        *)
+            patterns+=("$arg")
+            ;;
+        esac
+        shift
+    done
+    if [[ $_invalid_option == "yes" ]]; then
+        return 1
+    fi
+    return 0
+}
 
 help_message() {
-    echo  "USAGE: git ignore <files> <to> <ignore>"
+    echo "USAGE: git ignore <files> <to> <ignore>"
     exit 1
 }
 
 main() {
     ((!$#)) && help_message && exit 1
-    for file_to_ignore in "$@"; do
-        echo "Ignored ${file_to_ignore}"
-        echo "${file_to_ignore}" | tee -a '.gitignore'
-    done;
+    _repo_path=$(git rev-parse --show-toplevel 2>/dev/null)
+    _dotgit_folder="${_repo_path:-/non/existing}/.git"
+    if [[ -z ${_repo_path} || ! -d "${_dotgit_folder}" ]]; then
+        echo "fatal: not a git repository (or any of the parent directories): .git"
+        return 1
+    fi
+    _parse_arguments "$@" || return 1
+    _gitignore_location="${_gitignore_location:-${PWD}/.gitignore}"
+    if [[ ! -f ${_gitignore_location} ]]; then
+        touch "${_gitignore_location}"
+    fi
+    for pattern in ${patterns[*]}; do
+        echo -n "Ignored '${pattern}'"
+        [[ ${_use_git_exclude:-no} == "yes" ]] && echo -n " locally only"
+        echo "${pattern}" | tee -a "${_gitignore_location}" >/dev/null
+    done
 }
 
-main $@
+main "$@"

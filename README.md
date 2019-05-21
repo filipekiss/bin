@@ -113,9 +113,10 @@ Show which commits will be pushed to the current tracked branch.
 
 #### Options
 
-**--submodules** <br> Include submodules when checking
-
-**--force** <br> Force fetching changes from the remote
+| Flags            | Description                            |
+| :--------------- | :------------------------------------- |
+| **--submodules** | Include submodules when checking       |
+| **--force**      | Force fetching changes from the remote |
 
 `git-ahead` accepts any argument you're able to pass to `git log`
 
@@ -129,9 +130,10 @@ Show which commits will be pulled from the current tracked branch.
 
 #### Options
 
-**--submodules** <br> Include submodules when checking
-
-**--force** <br> Force fetching changes from the remote
+| Flags            | Description                            |
+| :--------------- | :------------------------------------- |
+| **--submodules** | Include submodules when checking       |
+| **--force**      | Force fetching changes from the remote |
 
 `git-behind` accepts any argument you're able to pass to `git log`
 
@@ -211,52 +213,24 @@ Check which branches are already merged into you main branch and delete them.
 
 #### Options
 
-**--remote** <br> Run against remote branches. Default is running on local
-
-**--dry-run, -n** <br> Don't actually delete anything. Useful for checking what
-would be deleted
-
-**--master-branch [master]** <br> Use this to pass the name of the branch that
-act as a master, in case your repository uses a different name.
-
-**--origin [origin]** <br> Set the name of the remote to run against. Defaults
-to origin
-
-**--force** <br> Force deletion of branches. You shouldn't need this option,
-ever
-
-**--whitelist [branch-name]** <br> If this option is given, only branches that
-match the given names we'll be deleted. It can be passed multiple times. \*
-wildcard is supported
-
-`git delete-merged-branches --whitelist 'feature/*' --whitelist 'release/*'`
-
-Would delete feature/some-feature, release/1.0.0 but would leave hotfix/1.0.1
-alone
-
-**--blacklist [branch-name]** <br> If this option is given, only branches that
-DO NOT match the given names we'll be deleted. It can be passed multiple
-times. \* wildcard is supported
-
-`git delete-merged-branches --blacklist 'feature/*' --blacklist 'release/*'`
-
-Would delete hotfix/1.0.1, but would leave alone feature/some-feature,
-release/1.0.0
-
-**--squashed** <br> Also check for branches that were merged to master using the
-squash strategy
-
-**--squashed-only** <br> Check only for branches that we're merged using the
-squash strategy
-
-**--no-squash-warning** <br> Suppress the output information when squashed
-branches are found but no `--squashed` option was passed
+| Flags                         | Description                                                                                                                                           |
+| :---------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **--remote**                  | Run against remote branches. Default is running on local                                                                                              |
+| **--dry-run, -n**             | Don't actually delete anything. Useful for checking what would be deleted                                                                             |
+| **--master-branch [master]**  | Use this to pass the name of the branch that act as a master, in case your repository uses a different name.                                          |
+| **--origin [origin]**         | Set the name of the remote to run against. Defaults to origin                                                                                         |
+| **--force**                   | Force deletion of branches. You shouldn't need this option, ever                                                                                      |
+| **--whitelist [branch-name]** | If this option is given, only branches that match the given names we'll be deleted. It can be passed multiple times. \* wildcard is supported         |
+| **--blacklist [branch-name]** | If this option is given, only branches that DO NOT match the given names we'll be deleted. It can be passed multiple times. \* wildcard is supported. |
+| **--squashed**                | Also check for branches that were merged to master using the squash strategy                                                                          |
+| **--squashed-only**           | Check only for branches that we're merged using the squash strategy                                                                                   |
+| **--no-squash-warning**       | Suppress the output information when squashed branches are found but no `--squashed` option was passed                                                |
 
 #### Arguments
 
-**[branch name]** <br> The only argument this command accepts is the branch name
-to compare other branches against. Defaults to origin/master (or whatever remote
-you pass using the --origin option)
+| Argument        | Description                                                                                                                                                                    |
+| :-------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **branch name** | The only argument this command accepts is the branch name to compare other branches against. Defaults to origin/master (or whatever remote you pass using the --origin option) |
 
 ---
 
@@ -298,24 +272,18 @@ _Requires `perl`_
 
 #### Options
 
-`-g` - Perform command globally, not scoped to current git repository
+| Flags | Description                                                    |
+| ----- | -------------------------------------------------------------- |
+| `-g`  | Perform command globally, not scoped to current git repository |
 
 #### Commands
 
-- `git go search "q"` - Perform a search
-- `git go @user` - Browse a user
-- `git go explore` - Explore GitHub `git go my [SUBCOMMAND]` - Browse your
-  personal items, where SUBCOMMAND is one of:
-
-  - `dashboard`
-  - `issues [assigned|mentioned|created]`
-  - `notifications`
-  - `profile`
-  - `pulls`
-  - `settings`
-  - `stars`
-
-- Everything else forwards to `hub browse`
+| Command             | Description                                                                                                                                                                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **search "q"**      | Perform a search                                                                                                                                                                                                                    |
+| **@user**           | Browse a user. Is you pass **@user/repository**, browse that repo instead                                                                                                                                                           |
+| **explore**         | Explore GitHub                                                                                                                                                                                                                      |
+| **my [SUBCOMMAND]** | Browse your personal items, where SUBCOMMAND is one of: <ul> <li>`dashboard`</li><li>`issues [assigned\|mentioned\|created]`</li><li>`notifications`</li><li>`profile`</li><li>`pulls`</li><li>`settings`</li><li>`stars`</li></ul> |
 
 ---
 
@@ -341,9 +309,18 @@ branches with no commits in the last 15 days.
 
 ### git-ignore (git ignore)
 
-**USAGE:** `git ignore file1 file2`
+**USAGE:** `git ignore [OPTIONS] [patterns]`
 
-Add files to `.gitignore`
+Add files to `.gitignore` or `.git/info/exclude`. If adding to
+`.git/info/exclude`, the file will be ignored for the current clone only. This
+is not commited.
+
+#### Options
+
+| Flags             | Description                                               |
+| ----------------- | --------------------------------------------------------- |
+| **--exclude, -e** | Use `.git/info/exclude` instead of adding to `.gitignore` |
+| **--root, -R**    | Add to the `.gitignore` file in the root of the project.  |
 
 ---
 
@@ -421,7 +398,9 @@ to the specified commit, or HEAD if no revision is specified.
 
 ##### Options:
 
-**-a, --all** <br> Commit unchanged files, same as git commit.
+| Flags         | Description                                 |
+| :------------ | :------------------------------------------ |
+| **-a, --all** | Commit unchanged files, same as git commit. |
 
 ---
 
@@ -507,15 +486,15 @@ merge. Be sure to set color.ui to auto or yes for maximum viewing pleasure.
 If [branch] is not specified, `git-wtf` will use the current branch. The
 possible [options] are:
 
-| Options           | Description                                                           |
-| ----------------- | --------------------------------------------------------------------- |
-| -l, --long        | include author info and date for each commit                          |
-| -a, --all         | show all branches across all remote repos, not just those from origin |
-| -A, --all-commits | show all commits, not just the first 5                                |
-| -s, --short       | don't show commits                                                    |
-| -k, --key         | show key                                                              |
-| -r, --relations   | show relation to features / integration branches                      |
-| --dump-config     | print out current configuration and exit                              |
+| Options               | Description                                                           |
+| --------------------- | --------------------------------------------------------------------- |
+| **-l, --long**        | include author info and date for each commit                          |
+| **-a, --all**         | show all branches across all remote repos, not just those from origin |
+| **-A, --all-commits** | show all commits, not just the first 5                                |
+| **-s, --short**       | don't show commits                                                    |
+| **-k, --key**         | show key                                                              |
+| **-r, --relations**   | show relation to features / integration branches                      |
+| **--dump-config**     | print out current configuration and exit                              |
 
 `git-wtf` uses some heuristics to determine which branches are integration
 branches, and which are feature branches. (Specifically, it assumes the
