@@ -404,6 +404,17 @@ to the specified commit, or HEAD if no revision is specified.
 
 ---
 
+### git-st (git st)
+
+**USAGE:** `git st`
+
+A better git status, that shows a short summary and the diff stat.
+
+Taken from
+[this reddit thread](https://www.reddit.com/r/git/comments/cfykfu/better_git_status/)
+
+## ![git-st example screenshot](https://user-images.githubusercontent.com/48519/61865981-9c4b6f80-aed4-11e9-9337-6673e50b20b4.png)
+
 ### git-store (git store)
 
 **USAGE:** `git store [description]` after `git add files-to-stash`
@@ -476,9 +487,9 @@ server, and for wrangling many topic branches.
 
 `git-wtf` can show you:
 
-- How a branch relates to the remote repo, if it's a tracking branch.
-- How a branch relates to integration branches, if it's a feature branch.
-- How a branch relates to the feature branches, if it's an integration branch.
+-   How a branch relates to the remote repo, if it's a tracking branch.
+-   How a branch relates to integration branches, if it's a feature branch.
+-   How a branch relates to the feature branches, if it's an integration branch.
 
 `git-wtf` is best used before a git push, or between a git fetch and a git
 merge. Be sure to set color.ui to auto or yes for maximum viewing pleasure.
