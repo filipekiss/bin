@@ -542,6 +542,30 @@ returned. Otherwise, the format `₩:<SSID>` wil be used
 
 ---
 
+### network-status
+
+**USAGE:** `network-status [options]`
+
+![network-status demo](https://user-images.githubusercontent.com/48519/67092470-900f3f80-f1af-11e9-8e95-d9df1dc5ae85.gif)
+
+An improved version of the `macos-wifi` binary. It works as a general tool to
+test internet availability. If you are connected to a Wi-Fi network, a Wi-Fi
+symbol and the network name will be displayed. If you're using a cabled
+connection, a little ethernet cable will be used to display the network status.
+
+_**The script works under Linux as well, but it won't show the network name.
+Also note that, for the symbols to show properly, you need to use a font that
+has been patched with [Nerd Font](https://www.nerdfonts.com)**_
+
+#### Options
+
+| Flags          | Description                                    |
+| :------------- | :--------------------------------------------- |
+| **--no-color** | Don't show colored output                      |
+| **--tmux**     | Use TMUX formatting instead of terminal colors |
+
+---
+
 ## Thanks
 
 I'd like to thank everyone who posts their scripts online so people like me are

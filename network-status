@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+_macos_is_connected_to_wifi() {
+    local _wifi_ssid
+
+    _wifi_ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | awk -F': ' '/ SSID/{print $2}')
+
+    if [[ -n $_wifi_ssid ]]; then
+        echo "$_wifi_ssid"
+        return 0
+    else
+        echo "no"
+        return 1
+    fi
+}
+
+_get_network_status() {
+    local test_url="${NETWORK_STATUS_URL:-https://canihazip.com/s}"
+    local connect_timeout="${NETWORK_STATUS_CONNECT_TIMEOUT:-1}"
+    local max_timeout="${NETWORK_STATUS_MAX_TIMEOUT:-5}"
+    command curl --connect-timeout "${connect_timeout}" --max-time "${max_timeout}" -I "${test_url}" >/dev/null 2>&1
+    ret=$?
+    [[ $ret -gt 0 ]] && echo "no" || echo "yes"
+    return $ret
+}
+
+network_status() {
+    local is_connected
+    local has_wifi
+    local _wifi_disconnected_symbol
+    local _wifi_connected_symbol
+    local COLOR_RED
+    local COLOR_GREEN
+    local COLOR_RESET
+    local COLOR_TMUX_RED
+    local COLOR_TMUX_GREEN
+    local COLOR_TMUX_RESET
+    local wifi_name
+    local _ethernet_connected_symbol
+    local _ethernet_disconnected_symbol
+    COLOR_RED=$(tput setaf 1)
+    COLOR_GREEN=$(tput setaf 2)
+    COLOR_RESET=$(tput sgr0)
+    COLOR_TMUX_RED="#[fg=red]"
+    COLOR_TMUX_GREEN="#[fg=green]"
+    COLOR_TMUX_RESET="#[fg=default]"
+    _wifi_disconnected_symbol="\ufaa9"
+    _wifi_connected_symbol="\uf1eb"
+    _ethernet_connected_symbol="\uf700"
+    _ethernet_disconnected_symbol="\uf701"
+    is_connected=$(_get_network_status)
+    has_wifi=$(_macos_is_connected_to_wifi)
+    wifi_name="${has_wifi}"
+    [[ "$*" =~ "--no-name" ]] && wifi_name=""
+    if [[ "$* " =~ "--tmux " ]]; then
+        COLOR_RED=$COLOR_TMUX_RED
+        COLOR_GREEN=$COLOR_TMUX_GREEN
+        COLOR_RESET=$COLOR_TMUX_RESET
+    fi
+    if [[ "$* " =~ "--no-color " ]]; then
+        COLOR_RED=""
+        COLOR_GREEN=""
+        COLOR_RESET=""
+    fi
+
+    if [[ ${is_connected:-"no"} == "yes" ]]; then
+        if [[ ${has_wifi} != "no" ]]; then
+            printf "${COLOR_GREEN}%b  %s${COLOR_RESET}" ${_wifi_connected_symbol} "${wifi_name}"
+        else
+            printf "${COLOR_GREEN}%b${COLOR_RESET}" ${_ethernet_connected_symbol}
+        fi
+    else
+        if [[ ${has_wifi} != "no" ]]; then
+            printf "${COLOR_RED}%b  %s${COLOR_RESET}" ${_wifi_disconnected_symbol} "${wifi_name}"
+        else
+            printf "${COLOR_RED}%b${COLOR_RESET}" ${_ethernet_disconnected_symbol}
+        fi
+    fi
+}
+
+network_status "$@"
