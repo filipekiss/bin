@@ -7,7 +7,7 @@
 # --------------------------------------------------------------------------------------------------
 # Usage
 # -----
-# git health [all|local|remote] --stale
+# git health [all|local|remote] --stale --markdown
 #
 # By default, git health will be run against local branches. You can pass local to only check local
 # branches and remote to only check remote branches and all to check all
@@ -29,13 +29,19 @@
 # --------------------------------------------------------------------------------------------------
 #
 
+_default_ref_format="%(color:yellow)%(refname:short)%(color:reset) %(color:green)%(committerdate:relative)%(color:reset)"
+_markdown_ref_format="| %(refname:short) | %(committerdate:relative) |"
+_default_log_format="%C(yellow)%D%C(reset) %C(green)%cr %C(reset)"
+_markdown_log_format="|%D|%cr|"
+
 function hasActivity() {
     branches=($(command git for-each-ref --sort="${SORT_ORDER}" ${REF_PATTERN} --format="%(refname:short)"))
+        [[ -n "${_header:-}" ]] && echo "${_header}"
     for branch in $branches;
     do;
         hasAct=$(git log --date=relative --after="${STALE_DATE}" -1 $branch)
         if [ -z $hasAct ]; then;
-            git --no-pager log -1 $branch --format="%C(blue)%D%C(reset) %C(yellow)%cr %C(reset)"
+            git --no-pager log -1 $branch --format="${_chosen_log_format}"
         fi
     done;
 }
@@ -92,6 +98,11 @@ function buildCommand() {
                 ALL_BRANCHES="yes"
                 branchOrdered="yes"
                 ;;
+            --markdown)
+                _header="| Branch | Last updated |\n\r| -- | -- |"
+                _chosen_log_format="${_markdown_log_format}"
+                _chosen_ref_format="${_markdown_ref_format}"
+                ;;
             --stale=*)
                 STALE_DATE=$(echo $arg | cut -d '=' -f2)
                 ;;
@@ -127,11 +138,14 @@ function _is_option() {
 
 function listBranches() {
     buildCommand "$@"
+    _chosen_log_format="${_chosen_log_format:-${_default_log_format}}"
+    _chosen_ref_format="${_chosen_ref_format:-${_default_ref_format}}"
     if [[ "yes" == ${UPDATE_REMOTES:-no} && "no" == ${SKIP_FETCH:-no} ]]; then
         updateRemotes;
     fi
     if [[ -z ${STALE_DATE:-} ]]; then
-        command git for-each-ref --sort="${SORT_ORDER}" ${REF_PATTERN} --format="%(color:yellow)%(refname:short)%(color:reset) %(color:green)%(committerdate:relative)%(color:reset)"
+        [[ -n "${_header:-}" ]] && echo "${_header}"
+        command git for-each-ref --sort="${SORT_ORDER}" ${REF_PATTERN} --format="${_chosen_ref_format}"
     else
         hasActivity
     fi

@@ -289,7 +289,7 @@ _Requires `perl`_
 
 ### git-health (git health)
 
-**USAGE:** `git health [all|local|remote] --stale`
+**USAGE:** `git health [all|local|remote] --stale --markdown`
 
 By default, git health will be run against local branches. You can pass local to
 only check local branches and remote to only check remote branches and all to
@@ -304,6 +304,10 @@ If you pass the `--stale` option, only stale branches will be listed. By
 default, branches are considered stale if no commit was made to them in the past
 3 months. You can pass a value to stale, so `--stale "15 days ago"` will list
 branches with no commits in the last 15 days.
+
+If you pass the `--markdown` option, the output will be a markdown table, so you
+can do something like `git health --markdown > stale_branches.md` to easily have
+a markdown file generated with the stale branches.
 
 ---
 
