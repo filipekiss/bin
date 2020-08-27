@@ -491,9 +491,9 @@ server, and for wrangling many topic branches.
 
 `git-wtf` can show you:
 
--   How a branch relates to the remote repo, if it's a tracking branch.
--   How a branch relates to integration branches, if it's a feature branch.
--   How a branch relates to the feature branches, if it's an integration branch.
+- How a branch relates to the remote repo, if it's a tracking branch.
+- How a branch relates to integration branches, if it's a feature branch.
+- How a branch relates to the feature branches, if it's an integration branch.
 
 `git-wtf` is best used before a git push, or between a git fetch and a git
 merge. Be sure to set color.ui to auto or yes for maximum viewing pleasure.
@@ -567,6 +567,19 @@ has been patched with [Nerd Font](https://www.nerdfonts.com)**_
 | :------------- | :--------------------------------------------- |
 | **--no-color** | Don't show colored output                      |
 | **--tmux**     | Use TMUX formatting instead of terminal colors |
+
+---
+
+### test-drive
+
+###### [original source](https://gist.github.com/hellricer/e514d9615d02838244d8de74d0ab18b3)
+
+**USAGE:** `test-drive`
+
+![test-drive demo](https://user-images.githubusercontent.com/48519/91456891-1393c580-e884-11ea-9c8b-eaab8f694aba.png)
+
+Display the current terminal capabilities, including 24-bit color, left-to-right
+chars, sixel images, emoji etc…
 
 ---
 
