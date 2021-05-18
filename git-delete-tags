@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+
+# Taken from https://gist.github.com/okunishinishi/9424779
+#Delete local tags.
+git tag -l | xargs git tag -d
+#Fetch remote tags.
+git fetch
+#Delete remote tags.
+git tag -l | xargs git push --delete origin
+#Delete local tags.
+git tag -l | xargs git tag -d

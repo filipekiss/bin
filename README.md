@@ -205,6 +205,14 @@ Remove all `git` related files. It's the opposite of `git init`.
 
 ---
 
+### git-delete-tags (git delete-tags)
+
+**USAGE:** `git delete-tags`
+
+Remove all tags locally and remotely. Requires **awk**
+
+---
+
 ### git-delete-merged-branches (git delete-merged-branches)
 
 **USAGE:** `git delete-merged-branches`
