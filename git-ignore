@@ -43,7 +43,7 @@ main() {
     ((!$#)) && help_message && exit 1
     _repo_path=$(git rev-parse --show-toplevel 2>/dev/null)
     _dotgit_folder="${_repo_path:-/non/existing}/.git"
-    if [[ -z ${_repo_path} || ! -d "${_dotgit_folder}" ]]; then
+    if [[ -z ${_repo_path} || ! -e "${_dotgit_folder}" ]]; then
         echo "fatal: not a git repository (or any of the parent directories): .git"
         return 1
     fi
