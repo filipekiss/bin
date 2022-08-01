@@ -31,8 +31,8 @@
 
 _default_ref_format="%(color:yellow)%(refname:short)%(color:reset) %(color:green)%(committerdate:relative)%(color:reset)"
 _markdown_ref_format="| %(refname:short) | %(committerdate:relative) |"
-_default_log_format="%C(yellow)%D%C(reset) %C(green)%cr %C(reset)"
-_markdown_log_format="|%D|%cr|"
+_default_log_format="%C(yellow)%S%C(reset) %C(green)%cr %C(reset)"
+_markdown_log_format="|%S|%cr|"
 
 function hasActivity() {
     branches=($(command git for-each-ref --sort="${SORT_ORDER}" ${REF_PATTERN} --format="%(refname:short)"))
@@ -41,7 +41,7 @@ function hasActivity() {
     do;
         hasAct=$(git log --date=relative --after="${STALE_DATE}" -1 $branch)
         if [ -z $hasAct ]; then;
-            git --no-pager log -1 $branch --format="${_chosen_log_format}"
+          command git --no-pager log -1 $branch --format="${_chosen_log_format}"
         fi
     done;
 }
@@ -99,7 +99,7 @@ function buildCommand() {
                 branchOrdered="yes"
                 ;;
             --markdown)
-                _header="| Branch | Last updated |\n\r| -- | -- |"
+                _header="| Branch | Last updated |\n| -- | -- |"
                 _chosen_log_format="${_markdown_log_format}"
                 _chosen_ref_format="${_markdown_ref_format}"
                 ;;
