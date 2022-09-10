@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # git-delete-merged-branches
 # --------------------------------------------------------------------------------------------------
-# Description
-# -----------
-# Description of the project
+# Version
+# -------
+# 2.0.0
 # --------------------------------------------------------------------------------------------------
 # Authors
 # -------
@@ -24,37 +24,37 @@
 # Run against remote branches. Default is running on local
 #
 # --dry-run, -n
-# Don't actually delete anythin. Useful for checking what would be deleted
+# Don't actually delete anything. Useful for checking what would be deleted
 #
-# --master-branch [master]
-# Use this to pass the name of the branch that act as a master, in case your repository uses
-# a different name.
+# --default-branch [main]
+# Use this to pass the name of the branch that act as the default, in case your
+# repository uses a different name. Default value is main
 #
-# --origin [origin]
+# --remote-name [origin]
 # Set the name of the remote to run against. Defaults to origin
 #
 # --force
 # Force deletion of branches. You shouldn't need this option, ever
 #
-# --whitelist [branch-name]
+# --allow [branch-name]
 # If this option is given, only branches that match the given names we'll be
 # deleted. It can be passed multiple times. * wildcard is supported
 #
-# e.g. git delete-merged-branches --whitelist 'feature/*' --whitelist 'release/*'
+# e.g. git delete-merged-branches --allow 'feature/*' --allow 'release/*'
 #
 # Would delete feature/some-feature, release/1.0.0 but would leave hotfix/1.0.1
 # alone
 #
-# --blacklist [branch-name]
+# --deny [branch-name]
 # If this option is given, only branches that DON'T match the given names we'll be
 # deleted. It can be passed multiple times. * wildcard is supported
 #
-# e.g. git delete-merged-branches --blacklist 'feature/*' --blacklist 'release/*'
+# e.g. git delete-merged-branches --deny 'feature/*' --deny 'release/*'
 #
 # Would delete hotfix/1.0.1, but would leave alone feature/some-feature, release/1.0.0
 #
 # --squashed
-# Also check for branches that were merged to master using the squash strategy
+# Also check for branches that were merged to main using the squash strategy
 #
 # --squashed-only
 # Check only for branches that we're merged using the squash strategy
@@ -67,7 +67,7 @@
 # ---------
 # [branch name]
 # The only argument this command accepts is the branch name to compare other branches against.
-# Defaults to origin/master (or whatever remote you pass using the --origin option)
+# Defaults to origin/main (or whatever remote you pass using the --remote-name option)
 
 _parse_arguments() {
     local arg
@@ -80,32 +80,32 @@ _parse_arguments() {
         --dry-run | -n)
             _dry_run="1"
             ;;
-        --master-branch=*)
-            _master_branch=$(echo "$arg" | cut -d '=' -f2)
+        --default-branch=*)
+            _default_branch=$(echo "$arg" | cut -d '=' -f2)
             ;;
-        --master-branch)
-            _master_branch=$2
+        --default-branch)
+            _default_branch=$2
             shift
             ;;
-        --origin=*)
-            _origin=$(echo "$arg" | cut -d '=' -f2)
+        --remote-name=*)
+            _remote_name=$(echo "$arg" | cut -d '=' -f2)
             ;;
-        --origin)
-            _origin=$2
+        --remote-name)
+            _remote_name=$2
             shift
             ;;
-        --whitelist=*)
-            _branch_whitelist+=("$(echo "$arg" | cut -d '=' -f2)")
+        --allow=*)
+            _branch_allow+=("$(echo "$arg" | cut -d '=' -f2)")
             ;;
-        --whitelist)
-            _branch_whitelist+=("$2")
+        --allow)
+            _branch_allow+=("$2")
             shift
             ;;
-        --blacklist=*)
-            _branch_blacklist+=("$(echo "$arg" | cut -d '=' -f2)")
+        --deny=*)
+            _branch_deny+=("$(echo "$arg" | cut -d '=' -f2)")
             ;;
-        --blacklist)
-            _branch_blacklist+=("$2")
+        --deny)
+            _branch_deny+=("$2")
             shift
             ;;
         --squashed)
@@ -138,17 +138,17 @@ _parse_arguments() {
 }
 
 _get_branches() {
-    git branch ${_use_remotes:-} --merged "${_branch_name:-"${_origin:-"origin"}/${_master_branch:-"master"}"}" | grep -v '\*' | grep -v HEAD
+    git branch ${_use_remotes:-} --merged "${_branch_name:-"${_remote_name:-"origin"}/${_default_branch:-"main"}"}" | grep -v '\*' | grep -v HEAD
 }
 
 _get_squashed_branches() {
-    git checkout -q "${_master_branch:-"master"}" && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do mergeBase=$(git merge-base "${_master_branch:-"master"}" "$branch") && [[ $(git cherry master "$(git commit-tree "$(git rev-parse "${branch}^{tree}")" -p "$mergeBase" -m _)") == "-"* ]] && echo "$branch"; done
+    git checkout -q "${_default_branch:-"main"}" && git for-each-ref refs/heads/ "--format=%(refname:short)" | while read -r branch; do mergeBase=$(git merge-base "${_default_branch:-"main"}" "$branch") && [[ $(git cherry ${_default_branch:-"main"} "$(git commit-tree "$(git rev-parse "${branch}^{tree}")" -p "$mergeBase" -m _)") == "-"* ]] && echo "$branch"; done
 }
 
 _validate_branch() {
     local targetBranch="${1}"
-    local masterBranch="${2}"
-    if _validate_branch_name "$targetBranch" "$masterBranch"; then
+    local defaultBranch="${2}"
+    if _validate_branch_name "$targetBranch" "$defaultBranch"; then
         return 1
     fi
     if ! _match_whitelist "$targetBranch"; then
@@ -165,8 +165,8 @@ _validate_branch() {
 
 _match_blacklist() {
     local targetBranch="$1"
-    [[ -z ${_branch_blacklist[*]} ]] && return 1
-    for blacklisted in ${_branch_blacklist[*]}; do
+    [[ -z ${_branch_deny[*]} ]] && return 1
+    for blacklisted in ${_branch_deny[*]}; do
         if _validate_branch_name "$targetBranch" "$blacklisted"; then
             # echo "Branch ${targetBranch} ignored. Matches blacklisted pattern ${blacklisted}"
             return 0
@@ -178,11 +178,11 @@ _match_blacklist() {
 _match_whitelist() {
     local targetBranch="$1"
     local errorIfNoWhitelist="${2:-}"
-    [[ -z ${_branch_whitelist[*]} && -z ${errorIfNoWhitelist} ]] && return 0
-    [[ -z ${_branch_whitelist[*]} && -n ${errorIfNoWhitelist} ]] && return 1
-    for whitelisted in ${_branch_whitelist[*]}; do
+    [[ -z ${_branch_allow[*]} && -z ${errorIfNoWhitelist} ]] && return 0
+    [[ -z ${_branch_allow[*]} && -n ${errorIfNoWhitelist} ]] && return 1
+    for whitelisted in ${_branch_allow[*]}; do
         if _validate_branch_name "$targetBranch" "$whitelisted"; then
-            # echo "Branch ${targetBranch} matched whitelist pattern ${whitelisted}"
+            # echo "Branch ${targetBranch} matched allow pattern ${whitelisted}"
             return 0
         fi
     done
@@ -191,16 +191,16 @@ _match_whitelist() {
 
 _validate_branch_name() {
     local targetBranch="${1}"
-    local masterBranch="${2}"
+    local defaultBranch="${2}"
     if [[ ${_use_remotes:-} ]]; then
-        masterBranch="${_origin:-"origin"}/${2}"
+        defaultBranch="${_remote_name:-"origin"}/${2}"
     fi
     case "$targetBranch" in
     *\**)
-        [[ $targetBranch == *$masterBranch* ]] && return 0 || return 1
+        [[ $targetBranch == *$defaultBranch* ]] && return 0 || return 1
         ;;
     *)
-        [[ $targetBranch == "$masterBranch" ]] && return 0 || return 1
+        [[ $targetBranch == "$defaultBranch" ]] && return 0 || return 1
         ;;
     esac
 }
@@ -209,7 +209,7 @@ _delete_remote_branch() {
     local branch="$1"
     local push_name
     push_name="$(echo "${branch}" | cut -d '/' -f2-)"
-    git push "${_origin:-"origin"}" --delete "$push_name"
+    git push "${_remote_name:-"origin"}" --delete "$push_name"
 }
 
 _delete_local_branch() {
@@ -224,7 +224,7 @@ _delete_local_branch() {
 _show_squashed_branches() {
     if [[ -z ${_include_squashed_merge_branches} && -z ${_only_squashed_merge_branches:-} && -z ${_no_squash_warning:-} && -n ${_squashed_list} ]]; then
         echo ""
-        echo "The following branches were merge-squashed into ${_master_branch:-"master"} and can be included with the following command:"
+        echo "The following branches were merge-squashed into ${_default_branch:-"main"} and can be included with the following command:"
         echo ""
         echo "git delete-merged-branches ${_passed_args}${_passed_args:+ }--squashed"
         echo ""
@@ -237,8 +237,8 @@ _show_squashed_branches() {
 }
 
 main() {
-    _branch_whitelist=()
-    _branch_blacklist=()
+    _branch_allow=()
+    _branch_deny=()
     _passed_args="$*"
     _parse_arguments "$@"
     read -r -a _branch_list <<<"$(_get_branches)"
@@ -250,9 +250,9 @@ main() {
     elif [[ -n ${_only_squashed_merge_branches:-} ]]; then
         read -r -a _branch_list <<<"${_squashed_list[*]}"
     fi
-    [[ -z ${_branch_list[*]} ]] && echo "No merged branches!" && _show_squashed_branches && exit 0
+    [[ -z ${_branch_list[*]} ]] && echo "No branches merged into ${_default_branch:-'main'}" && _show_squashed_branches && exit 0
     for branch in ${_branch_list[*]}; do
-        if _validate_branch "$branch" "${_master_branch:-"master"}"; then
+        if _validate_branch "$branch" "${_default_branch:-"main"}"; then
             if [[ -n ${_dry_run:-} ]]; then
                 echo "Would Deleted: $branch"
                 continue
