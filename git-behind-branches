@@ -1,0 +1,168 @@
+#!/usr/bin/env zsh
+# git-behind-branches
+# --------------------------------------------------------------------------------------------------
+# Version
+# -------
+# 1.0.0
+# --------------------------------------------------------------------------------------------------
+# Authors
+# -------
+# Filipe Kiss <hello@filipekiss.com.br> http://github.com/filipekiss
+# --------------------------------------------------------------------------------------------------
+# Usage
+# -----
+# Add this to your $PATH and invoke as a git command:
+#
+#   git behind-branches
+#
+# Or simply run ./git-behind-branches
+# --------------------------------------------------------------------------------------------------
+# Options
+# -------
+#
+# --dry-run, -n
+# Don't actually delete anything. Useful for checking what would be deleted
+#
+# --force, -f
+# Force deletion of branches. Sometimes, the branches are identified as not
+# being merged and git will refuse to delete them (this might happen in cases of
+# squashed commits, for example). Using this options makes git ignore this and
+# delete the branch anyway.
+#
+# current = symbolic-ref --short HEAD
+_parse_arguments() {
+    local arg
+    while (($# > 0)); do
+        arg="$1"
+        case "$arg" in
+        --dry-run | -n)
+            _dry_run="1"
+            ;;
+        --delete|-d)
+            _delete_branch="-d"
+            ;;
+        --force|-f)
+            _delete_branch="-D"
+            ;;
+        --short|-s)
+            _output_type="short"
+            ;;
+        --*)
+            # Inexistent dashed option, do nothing
+            ;;
+        -*)
+            # Inexistent dashed option, do nothing
+            ;;
+        "") ;;
+        esac
+        shift
+    done
+    return 0
+}
+
+# get the list of all branches except the current one
+_get_branches() {
+  git branch --format='%(refname:short)' | grep -v "^$1\$"
+}
+
+_short_log() {
+  if [[ ${_output_type:-"long"} = "short" ]]; then
+  _always_log $@
+  fi
+}
+
+_long_log() {
+  if [[ ${_output_type:-"long"} = "long" ]]; then
+  _always_log $@
+  fi
+}
+
+_always_log() {
+  local message="$1"
+  command git --no-pager log -1 --format="$1"
+}
+
+
+restore_git_option() {
+  local option_name="$1"
+  local restore_value="$2"
+  if [[ -n ${restore_value} ]]; then
+    command git config "${option_name}" "${restore_value}"
+  else
+    command git config --unset "${option_name}"
+  fi
+}
+
+main() { 
+
+  _parse_arguments "$@"
+  local _adviceHead=$(git config --get advice.detachedHead)
+  local _rerere=$(git config --get rerere.enabled)
+  local _current_branch=$(git branch --show-current)
+  local _temp_branch_name="TEMPORARY-GIT-BEHIND"
+  if [[ -z ${_current_branch} ]]; then
+    echo "Not checked out on a branch. Aborting…"
+    exit 1
+  fi
+
+  # Abort if the workspace is not clean
+  local _has_untracked_files=$(command git ls-files --others --exclude-standard)
+  # Stash current changes in the index to avoid losing changes
+  git diff-index --quiet HEAD
+  local _has_unstaged_changes=$?
+  if [[ $_has_unstaged_changes -ne 0 || -n $_has_untracked_files ]]; then
+      echo "Workspace is not clean, refusing to continue…"
+      exit 1
+  fi
+
+  local _branches=("${(@f)$(_get_branches ${_current_branch})}")
+  local _base_commit_sha=$(git log -n 1 --pretty=format:"%h")
+  # Disable git advice and rerere to avoid unnecessary output
+  command git config advice.detachedHead false
+  command git config rerere.enabled false
+
+  _long_log "Finding branches that would leave %Cblue${_current_branch}%Creset (%C(yellow)${_base_commit_sha}%Creset) unchanged"
+  if [[ ${_branches} = "" ]]; then
+    _always_log "No branches to compare against ${_current_branch}%Creset"
+    exit 0
+  fi
+  _long_log "Comparing %Cblue${#_branches}%Creset branches"
+
+  for branch in "${_branches[@]}"; do
+    _long_log "Testing %Cblue${branch}%Creset against %Cgreen${_current_branch}%Creset (%C(yellow)${_base_commit_sha}%Creset)"
+    # Create temporary branch
+    _long_log "Creating temporary branch from base commit (%C(yellow)${_base_commit_sha}%Creset)"
+    command git checkout --quiet -b ${_temp_branch_name} ${_base_commit_sha} > /dev/null
+
+    # Merge the target branch and expect 'Already up to date.'
+    local output=$(command git merge --no-commit ${branch} 2>/dev/null)
+    if [[ $output = "Already up to date." ]]; then
+      if [[ -n ${_delete_branch} ]]; then
+      command git branch ${_delete_branch} ${branch} > /dev/null 2&>1
+      if [[ $? -eq 0 ]]; then
+      _always_log "%Cblue${branch}%Creset deleted"
+    else
+      _always_log "Unable to delete %Cred${branch}%Creset. Try passing --force as an option."
+      fi
+      else
+      _long_log "%Cgreen${_current_branch}%Creset is already up to date with %Cblue${branch}%Creset"
+      _short_log "${branch}%Creset"
+      fi
+    else
+      _long_log "%Cred${branch} has diverged%Creset from %Cgreen${_current_branch}%Creset."
+    fi
+    # Cleanup
+    command git reset --hard ${_base_commit_sha} > /dev/null
+    command git clean -fd > /dev/null
+    _long_log "Going back to %Cblue${_current_branch}%Creset (%C(yellow)${_base_commit_sha}%Creset)"
+    command git checkout --quiet ${_current_branch} > /dev/null
+    command git branch -D ${_temp_branch_name} > /dev/null
+  done
+  
+  # Restore/unset the detachedHead advice behaviour
+  restore_git_option "advice.detachedHead" "${_adviceHead}"
+  restore_git_option "rerere.enabled" "${_rerere}"
+
+}
+
+main "$@"
