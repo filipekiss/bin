@@ -29,7 +29,7 @@ _get_branch_details() {
     _current_branch=$(git rev-parse --abbrev-ref HEAD)
     _tracking_branch=$(git config branch.$_current_branch.merge)
     _tracking_remote=$(git config branch.$_current_branch.remote)
-    _tracking_remote_branch_name=${_tracking_branch#"refs/heads/"}
+    _tracking_branch_name=${_tracking_branch#"refs/heads/"}
     _remote_url=$(git config remote.$_tracking_remote.url)
 }
 
@@ -44,15 +44,28 @@ _fetch_origin_if_needed() {
     fi
 }
 
-_show_log() {
+_show_remote_log() {
     local binaryName=$(basename $0)
     local actionName=${binaryName#git-}
     case "$actionName" in
         behind)
-            git log ${_git_options:-} ..${_tracking_remote}/${_tracking_remote_branch_name}
+            git log ${_git_options:-} ..${_tracking_remote}/${_tracking_branch_name}
             ;;
         ahead)
-            git log ${_git_options:-} ${_tracking_remote}/${_tracking_remote_branch_name}..
+            git log ${_git_options:-} ${_tracking_remote}/${_tracking_branch_name}..
+            ;;
+    esac
+}
+
+_show_local_log() {
+    local binaryName=$(basename $0)
+    local actionName=${binaryName#git-}
+    case "$actionName" in
+        behind)
+            git log ${_git_options:-} ..${_tracking_branch_name}
+            ;;
+        ahead)
+            git log ${_git_options:-} ${_tracking_branch_name}..
             ;;
     esac
 }
@@ -61,11 +74,10 @@ main() {
     _parse_arguments $@
     _get_branch_details
     [[ -z ${_tracking_remote} || ${_tracking_remote} == "." ]] && \
-        echo "This branch is not tracking anything remote." && \
-        echo "Use git branch --set-upstream-to=<remote/branch> and try again" && \
-        exit 1
+        _show_local_log
+        exit $?
     _fetch_origin_if_needed
-    _show_log
+    _show_remote_log
 }
 
 main $@
