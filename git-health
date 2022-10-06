@@ -22,6 +22,29 @@
 # past 3 months. You can pass a value to stale, so '--stale "15 days ago"' will
 # list branches with no commits in the last 15 days.
 #
+# Options
+# -------
+#
+# --stale
+#
+# List only stale branches. By default, stale branches are branches who have no
+# commits in the past 3 months. You can pass a value to --stale to change that 
+# behavior:
+#
+#   git health --stale "15 days ago" 
+#
+# Will consider any branch that has had no commits in the past 15 days to be
+# stale. The format is the same as the one used by git-log
+#
+# --markdown
+#
+# Outputs a Markdown table with the branch and the last activity date
+#
+# --slack
+#
+# Outputs a "table" that can be sent on Slack, since it doesn't support proper
+# markdown tables
+#
 # --------------------------------------------------------------------------------------------------
 # Authors
 # -------
@@ -30,9 +53,11 @@
 #
 
 _default_ref_format="%(color:yellow)%(refname:short)%(color:reset) %(color:green)%(committerdate:relative)%(color:reset)"
-_markdown_ref_format="| %(refname:short) | %(committerdate:relative) |"
 _default_log_format="%C(yellow)%S%C(reset) %C(green)%cr %C(reset)"
+_markdown_ref_format="| %(refname:short) | %(committerdate:relative) |"
 _markdown_log_format="|%S|%cr|"
+_slack_ref_format="*%(refname:short)* (%(committerdate:relative))"
+_slack_log_format="*%S* (%cr)"
 
 function hasActivity() {
     branches=($(command git for-each-ref --sort="${SORT_ORDER}" ${REF_PATTERN} --format="%(refname:short)"))
@@ -102,6 +127,11 @@ function buildCommand() {
                 _header="| Branch | Last updated |\n| -- | -- |"
                 _chosen_log_format="${_markdown_log_format}"
                 _chosen_ref_format="${_markdown_ref_format}"
+                ;;
+            --slack)
+                _header="*Branch (last activity)*"
+                _chosen_log_format="${_slack_log_format}"
+                _chosen_ref_format="${_slack_ref_format}"
                 ;;
             --stale=*)
                 STALE_DATE=$(echo $arg | cut -d '=' -f2)
