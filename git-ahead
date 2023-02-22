@@ -12,12 +12,13 @@ _parse_arguments() {
                 _force_fetch="yes"
                 ;;
             -*)
-                _git_options="${_git_options:-} $1"
+                _git_options="${_git_options:-} $arg"
                 ;;
             --*)
-                _git_options="${_git_options:-} $1"
+                _git_options="${_git_options:-} $arg"
                 ;;
             *)
+                [[ -z ${_target_branch} ]] && _target_branch="$arg"
                 ;;
         esac
         shift
@@ -34,7 +35,7 @@ _get_branch_details() {
 }
 
 _fetch_origin_if_needed() {
-    _last_fetch=$(git config gitincoming.lastFecth || echo 0)
+    _last_fetch=$(git config gitincoming.lastFetch || echo 0)
     _cache_duration=$(git config gitincoming.cacheDuration || echo 3600)
     _current_time=$(date +%s)
     _next_fetch=$((_last_fetch + _cache_duration))
@@ -70,12 +71,31 @@ _show_local_log() {
     esac
 }
 
+_show_target_log() {
+    local binaryName=$(basename $0)
+    local actionName=${binaryName#git-}
+    case "$actionName" in
+        behind)
+            git log ${_git_options:-} ..${1}
+            ;;
+        ahead)
+            git log ${_git_options:-} ${1}..
+            ;;
+    esac
+}
+
 main() {
     _parse_arguments $@
     _get_branch_details
-    [[ -z ${_tracking_remote} || ${_tracking_remote} == "." ]] && \
-        _show_local_log
+    # if we have a target branch, compare with that and exit
+    [[ -n ${_target_branch:-} ]] && \
+        _show_target_log "$_target_branch" && \
         exit $?
+    # check if we need to compare against a local branch and exit
+    [[ -z ${_tracking_remote} || ${_tracking_remote} == "." ]] && \
+        _show_local_log && \
+        exit $?
+    # otherwise, fetch info and compare against the tracked remote branch
     _fetch_origin_if_needed
     _show_remote_log
 }

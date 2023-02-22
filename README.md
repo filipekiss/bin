@@ -107,9 +107,10 @@ Use to extract compressed files: `extract archive.zip`.
 
 ### git-ahead (git ahead)
 
-**USAGE:** `git ahead`
+**USAGE:** `git ahead [branch]`
 
-Show which commits will be pushed to the current tracked branch.
+Show which commits will be pushed to the current tracked branch. If you pass a
+branch, compare against that branch instead
 
 #### Options
 
@@ -124,9 +125,10 @@ Show which commits will be pushed to the current tracked branch.
 
 ### git-behind (git behind)
 
-**USAGE:** `git behind`
+**USAGE:** `git behind [branch]`
 
-Show which commits will be pulled from the current tracked branch.
+Show which commits will be pulled from the current tracked branch. If you pass a
+branch, compare against that branch instead
 
 #### Options
 
