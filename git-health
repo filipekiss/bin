@@ -64,9 +64,9 @@ function hasActivity() {
         [[ -n "${_header:-}" ]] && echo "${_header}"
     for branch in $branches;
     do;
-        hasAct=$(git log --date=relative --after="${STALE_DATE}" -1 $branch)
+        hasAct=$(git log --date=relative --after="${STALE_DATE}" -1 $branch --)
         if [ -z $hasAct ]; then;
-          command git --no-pager log -1 $branch --format="${_chosen_log_format}"
+          command git --no-pager log -1 $branch --format="${_chosen_log_format}" --
         fi
     done;
 }
