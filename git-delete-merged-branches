@@ -117,8 +117,11 @@ _parse_arguments() {
         --no-squash-warning)
             _no_squash_warning="yes"
             ;;
-        --force)
+        --force-delete)
             _force_delete="-D"
+            ;;
+        --delete)
+            _delete="yes"
             ;;
         --*)
             # Inexistent dashed option, do nothing
@@ -253,7 +256,7 @@ main() {
     [[ -z ${_branch_list[*]} ]] && echo "No branches merged into ${_default_branch:-'main'}" && _show_squashed_branches && exit 0
     for branch in ${_branch_list[*]}; do
         if _validate_branch "$branch" "${_default_branch:-"main"}"; then
-            if [[ -n ${_dry_run:-} ]]; then
+            if [[ ${_delete:-"no"} == "no" ]]; then
                 echo "Would Deleted: $branch"
                 continue
             fi

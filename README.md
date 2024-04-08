@@ -226,11 +226,11 @@ Check which branches are already merged into you main branch and delete them.
 | Flags                       | Description                                                                                                                                           |
 | :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **--remote**                | Run against remote branches. Default is running on local                                                                                              |
-| **--dry-run, -n**           | Don't actually delete anything. Useful for checking what would be deleted                                                                             |
+| **--delete**           | Delete the merged branches. If  you don't pass this option, it will only list the branches that would be deleted|
 | **--default-branch [main]** | Use this to pass the name of the default branch, in case your repository uses a different name than main.                                             |
 | **--origin [origin]**       | Set the name of the remote to run against. Defaults to origin                                                                                         |
-| **--force**                 | Force deletion of branches. You shouldn't need this option, ever                                                                                      |
-| **--allo [branch-name]**    | If this option is given, only branches that match the given names we'll be deleted. It can be passed multiple times. \* wildcard is supported         |
+| **--force-delete**                 | Force deletion of branches. You shouldn't need this option, ever                                                                                      |
+| **--allow [branch-name]**    | If this option is given, only branches that match the given names we'll be deleted. It can be passed multiple times. \* wildcard is supported         |
 | **--deny [branch-name]**    | If this option is given, only branches that DO NOT match the given names we'll be deleted. It can be passed multiple times. \* wildcard is supported. |
 | **--squashed**              | Also check for branches that were merged to master using the squash strategy                                                                          |
 | **--squashed-only**         | Check only for branches that we're merged using the squash strategy                                                                                   |
