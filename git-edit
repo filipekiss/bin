@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Usage: git-edit [conflicted|staged|edited|commited]
+# If no option is passed, edited is the default
 
 main() {
     local action="$1"
@@ -17,7 +18,7 @@ main() {
         read -r -d ' ' -a files < <(git diff HEAD --name-only --diff-filter=ACMR)
         ;;
     *)
-        echo "'${action}' is not a valid filter"
+        read -r -d ' ' -a files < <(git diff HEAD --name-only --diff-filter=ACMR)
         return
         ;;
     esac

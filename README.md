@@ -249,7 +249,7 @@ Check which branches are already merged into you main branch and delete them.
 **USAGE:** `git edit [conflicts|commited|staged|edited]`
 
 Use this to edit file in various states. Uses `$EDITOR` to decide which editor
-to use
+to use. If no filter is passed, uses `edited` by default
 
 #### Usage
 
@@ -261,7 +261,7 @@ to use
 commit
 
 **`git edit edited`** <br> Open all files that were edited but not staged since
-last commit
+last commit - this is the same as `git edit`
 
 ---
 
