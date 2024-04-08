@@ -47,7 +47,7 @@ If [branch] is not specified, git-wtf will use the current branch. The possible
 
 git-wtf uses some heuristics to determine which branches are integration
 branches, and which are feature branches. (Specifically, it assumes the
-integration branches are named "master", "next" and "edge".) If it guesses
+integration branches are named "main", "next" and "edge".) If it guesses
 incorrectly, you will have to create a .git-wtfrc file.
 
 To start building a configuration file, run "git-wtf --dump-config >
@@ -55,9 +55,9 @@ To start building a configuration file, run "git-wtf --dump-config >
 integration branches, any branches to ignore, and the max number of commits to
 display when --all-commits isn't used.  git-wtf will look for a .git-wtfrc file
 starting in the current directory, and recursively up to the root.
-
+fix(git-health): avoid ambiguous revision parameter
 IMPORTANT NOTE: all local branches referenced in .git-wtfrc must be prefixed
-with heads/, e.g. "heads/master". Remote branches must be of the form
+with heads/, e.g. "heads/main". Remote branches must be of the form
 remotes/<remote>/<branch>.
 EOS
 
@@ -260,7 +260,7 @@ end
 #### EXECUTION STARTS HERE ####
 
 ## find config file and load it
-$config = { "integration-branches" => %w(heads/master heads/next heads/edge), "ignore" => [], "max_commits" => 5 }.merge begin
+$config = { "integration-branches" => %w(heads/main heads/next heads/edge), "ignore" => [], "max_commits" => 5 }.merge begin
   fn = find_file CONFIG_FN
   if fn && (h = YAML::load_file(fn)) # yaml turns empty files into false
     h["integration-branches"] ||= h["versions"] # support old nomenclature
