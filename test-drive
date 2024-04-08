@@ -7,9 +7,8 @@
 
 echo "# 24-bit (true-color)"
 # based on: https://gist.github.com/XVilka/8346728
-term_cols="$(tput cols || echo 80)"
-cols=$(echo "2^((l($term_cols)/l(2))-1)" | bc -l 2>/dev/null)
-rows=$((cols / 2))
+cols=32
+rows=16
 awk -v cols="$cols" -v rows="$rows" 'BEGIN{
     s="  ";
     m=cols+rows;
