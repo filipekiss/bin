@@ -235,7 +235,7 @@ _show_squashed_branches() {
             echo "${branch}"
         done
         echo ""
-        echo "To supress this message, use git delete-merged-branches ${_passed_args}{$_passed_args:+ }--no-squash-warning"
+        echo "To supress this message, use git delete-merged-branches ${_passed_args}${_passed_args:+ }--no-squash-warning"
     fi
 }
 
