@@ -14,6 +14,10 @@ uncredited bin, please, [let me know][issue] (or open a
 > **Disclaimer**: I mainly use ZSH, so some scripts here might not work as well
 > (or not work at all) in other shell like [bash][2] or [fish][3]. Feel free to
 > open a [pull-request][pull-request] to make these scripts more portable.
+> 
+> I also started migrating some of the scripts to [Lua][lua], for better
+> performance and portability (and it's also easier to write). Check the [LUA.md][./LUA.md]
+> file for more info.
 
 ## Install
 
